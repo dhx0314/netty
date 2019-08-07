@@ -1,17 +1,14 @@
 package com.nettydome.nettydemo.netty;
 
-import com.nettydome.nettydemo.util.GetDtuIp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,25 +31,35 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     //用于记录和管理所有客户端的channel
     public static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    @Autowired
-    private UserChannelRel userChannelRel;
 
     @Autowired
-    private GetDtuIp getDtuIp;
+    private UserChannelRel userChannelRel;
+//
+//    @Autowired
+//    private GetDtuIp getDtuIp;
 
 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        HashMap<String,String> ipmap = new HashMap<>();
-        ipmap.put("aa","bb");
-        System.out.println(ipmap);
-        ByteBuf body=(ByteBuf)msg;
+
         ByteBuf byteBuf=(ByteBuf)msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
+
+
         System.out.println("------------");
+        GetDtuIp getDtuIp2 = new GetDtuIp();
+        HashMap<String,String> ipmap = getDtuIp2.getDtuIp();
+        // HashMap<String,String> ipmap =new HashMap<>();
+        ipmap.put("eafa","wfawfe");
+        System.out.println(ipmap);
+
+
+
+        System.out.println("userChannelRel   "+userChannelRel);
+        System.out.println("getDtuIp   "+ getDtuIp2);
 //        String message2 = new String(bytes, "UTF-8");
 //        System.out.println("from client : " + message2);
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
