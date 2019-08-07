@@ -34,7 +34,7 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
     private UserChannelRel userChannelRel;
-//
+
 //    @Autowired
 //    private GetDtuIp getDtuIp;
 
@@ -48,25 +48,21 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
 
+        GetDtuIp dtuIp = new GetDtuIp();
+
 
         System.out.println("------------");
-        GetDtuIp getDtuIp2 = new GetDtuIp();
-        HashMap<String,String> ipmap = getDtuIp2.getDtuIp();
-        // HashMap<String,String> ipmap =new HashMap<>();
-        ipmap.put("eafa","wfawfe");
-        System.out.println(ipmap);
-
-
-
+        HashMap<String, String> map = dtuIp.getDtuIpAddress();
+        System.out.println(map);
         System.out.println("userChannelRel   "+userChannelRel);
-        System.out.println("getDtuIp   "+ getDtuIp2);
+        System.out.println("getDtuIp   "+ dtuIp);
 //        String message2 = new String(bytes, "UTF-8");
 //        System.out.println("from client : " + message2);
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
         userChannelRel.put(clientIP,ctx.channel());
         System.out.println(clientIP);
-        for (Map.Entry<String, String> stringStringEntry : ipmap.entrySet()) {
+        for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
             String ip=stringStringEntry.getKey();
             if(clientIP.equals(ip)){
                 System.out.println("------------------");

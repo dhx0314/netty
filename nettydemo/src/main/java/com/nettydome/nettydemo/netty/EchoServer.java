@@ -32,8 +32,7 @@ import javax.annotation.Resource;
 @Component
 @Slf4j
 public class EchoServer {
-    @Resource
-    private EchoServerHandler echoServerHandler;
+
     /**
      * NETT服务器配置类
      */

@@ -19,7 +19,7 @@ public class NettydemoApplicationTests {
 
     @Test
     public void contextLoads() {
-        HashMap dtuIp = getDtuIp.getDtuIp();
+        HashMap dtuIp = getDtuIp.getDtuIpAddress();
 
         System.out.println(dtuIp);
 

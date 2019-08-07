@@ -1,9 +1,7 @@
 netty:
   port: 9990
 
-dtu:
-  DTU_DEVICE01MAC: 98-d8-63-11-a1-3d
-  DTU_DEVICE02MAC: 00-1e-64-df-fc-9b
+
 
 
 

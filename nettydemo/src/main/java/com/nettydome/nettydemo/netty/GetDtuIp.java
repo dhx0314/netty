@@ -1,8 +1,10 @@
 package com.nettydome.nettydemo.netty;
 
+import io.netty.channel.ChannelHandler;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,13 +19,15 @@ import java.util.Map;
  * @CreateDate: 2019/8/7 10:05
  * @Version: 1.0
  */
+
+
+
 @Component
 public class GetDtuIp {
 
-    @Value("${dtu.DTU_DEVICE01MAC}")
-    private String DTU_DEVICE01MAC;
-    @Value("${dtu.DTU_DEVICE02MAC}")
-    private String DTU_DEVICE02MAC;
+
+    private String DTU_DEVICE01MAC="98-d8-63-11-a1-3d";
+    private String DTU_DEVICE02MAC="00-1e-64-df-fc-9b";
 
 
 
@@ -38,7 +42,10 @@ public class GetDtuIp {
      * @Date 2019//7 10:2
      * @Return java.util.Map
      **/
-    public  HashMap<String, String> getDtuIp() {
+    public  HashMap<String, String> getDtuIpAddress() {
+
+        System.out.println(DTU_DEVICE02MAC);
+        System.out.println(DTU_DEVICE01MAC);
         HashMap<String, String> map = new HashMap<>();
         HashMap<String, String> ipMap = new HashMap<>();
         BufferedReader br = null;
@@ -71,7 +78,6 @@ public class GetDtuIp {
                     ipMap.put(stringStringEntry.getValue(),"DTU设备2");
                 }
             }
-
             return ipMap;
         } catch (Exception e) {
 
