@@ -1,4 +1,4 @@
-package com.nettydome.nettydemo.netty;
+package com.nettydome.nettydemo.util;
 
 import org.junit.Test;
 

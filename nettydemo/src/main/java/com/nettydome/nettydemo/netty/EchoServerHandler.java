@@ -1,5 +1,6 @@
 package com.nettydome.nettydemo.netty;
 
+import com.nettydome.nettydemo.util.GetDtuIp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -33,17 +36,18 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     public static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     @Autowired
     private UserChannelRel userChannelRel;
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("channel捕获到了异常: "+ cause.toString());
-        // 发生异常之后关闭连接（关闭channel），随后从ChannelGroup中移除
-        ctx.channel().close();
-        users.remove(ctx.channel());
-    }
+
+    @Autowired
+    private GetDtuIp getDtuIp;
+
 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+
+        HashMap<String,String> ipmap = new HashMap<>();
+        ipmap.put("aa","bb");
+        System.out.println(ipmap);
         ByteBuf body=(ByteBuf)msg;
         ByteBuf byteBuf=(ByteBuf)msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
@@ -55,22 +59,29 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         String clientIP = insocket.getAddress().getHostAddress();
         userChannelRel.put(clientIP,ctx.channel());
         System.out.println(clientIP);
-        if(clientIP.equals("192.168.0.134")){
-//调用netWeight方法，每次返回一个净重
-            double netWeight = netWeight(bytes);
-//        调用tareWeigh方法，每次返回一个净重
-            String tareWeigh = tareWeigh(bytes);
-            System.out.print(tareWeigh);
-            System.out.print("====");
-            System.out.print(netWeight);
-            System.out.print("****");
-//        String s = To16(bytes);
-//        System.out.print("["+s+"]");
-        }else {
-            System.out.println("------------");
-            String message = new String(bytes, "UTF-8");
-            System.out.println("from client : " + message);
+        for (Map.Entry<String, String> stringStringEntry : ipmap.entrySet()) {
+            String ip=stringStringEntry.getKey();
+            if(clientIP.equals(ip)){
+                System.out.println("------------------");
+                System.out.println(stringStringEntry.getValue());
+                System.out.println("------------------");
+                //调用netWeight方法，每次返回一个净重
+                double netWeight = netWeight(bytes);
+                //   调用tareWeigh方法，每次返回一个净重
+                String tareWeigh = tareWeigh(bytes);
+                System.out.print(tareWeigh);
+                System.out.print("====");
+                System.out.print(netWeight);
+                System.out.print("****");
+            }else {
+                System.out.println("------------");
+                System.out.println("其他设备");
+                System.out.println("--------------");
+                String message = new String(bytes, "UTF-8");
+                System.out.println("from client : " + message);
+            }
         }
+
     }
 
     @Override
@@ -89,6 +100,14 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         users.remove(ctx.channel());
         UserChannelRel.deleteChanel(ctx.channel());
         UserChannelRel.output();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.info("channel捕获到了异常: "+ cause.toString());
+        // 发生异常之后关闭连接（关闭channel），随后从ChannelGroup中移除
+        ctx.channel().close();
+        users.remove(ctx.channel());
     }
 
     //    净重
