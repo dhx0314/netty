@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +30,7 @@ public class GetDtuIp {
 
     private String DTU_DEVICE01MAC="98-d8-63-11-a1-3d";
     private String DTU_DEVICE02MAC="00-1e-64-df-fc-9b";
+    private String DTU_DEVICE03MAC="ff-1e-64-df-fc-9b";
 
 
     /**
@@ -38,8 +41,15 @@ public class GetDtuIp {
      **/
     public  HashMap<String, String> getDtuIpAddress() {
 
-        System.out.println(DTU_DEVICE02MAC);
-        System.out.println(DTU_DEVICE01MAC);
+        ArrayList<String> dtuMac = new ArrayList<>();
+        dtuMac.add(DTU_DEVICE01MAC);
+        dtuMac.add(DTU_DEVICE02MAC);
+        dtuMac.add(DTU_DEVICE03MAC);
+//        System.out.println(dtuMac.get(0));
+//        System.out.println(dtuMac.get(1));
+//        System.out.println(dtuMac.get(2));
+
+
         HashMap<String, String> map = new HashMap<>();
         HashMap<String, String> ipMap = new HashMap<>();
         BufferedReader br = null;
@@ -50,7 +60,6 @@ public class GetDtuIp {
             String line = null;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
-                //  sb.append(line + "\n");
                 String s = line;
                 if (line.length() > 40) {
                     String IP = line.substring(0, 15).trim();
@@ -60,12 +69,16 @@ public class GetDtuIp {
                 }
             }
             System.out.println("------------");
+            for (Map.Entry<String, String> stringStringEntry : ipMap.entrySet()) {
+                System.out.println(stringStringEntry.getKey()+"  "+stringStringEntry.getValue());
+            }
+
+            int t=1;
             for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
-                if (DTU_DEVICE01MAC.equals(stringStringEntry.getKey())) {
-                    ipMap.put(stringStringEntry.getValue(),"DTU设备1");
-                }
-                if (DTU_DEVICE02MAC.equals(stringStringEntry.getKey())) {
-                    ipMap.put(stringStringEntry.getValue(),"DTU设备2");
+                for (int i = 0; i <dtuMac.size() ; i++) {
+                    if (dtuMac.get(i).equals(stringStringEntry.getKey())) {
+                        ipMap.put(stringStringEntry.getValue(),"DTU设备 "+ t++);
+                    }
                 }
             }
             return ipMap;

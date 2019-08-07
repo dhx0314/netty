@@ -5,22 +5,4 @@ netty:
 
 
 
-spring:
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/book?useUnicode=true&characterEncoding=UTF-8&autoReconnectForPools=true&serverTimezone=Hongkong&useSSL=false
-    username: root
-    password: root
-    name: druid
-    druid:
-      initialSize: 2
-      minIdle: 2
-      maxActive: 20
-      maxWait: 60000
-      timeBetweenEvictionRunsMillis: 60000
-      minEvictableIdleTimeMillis: 3600000
-      validationQuery: SELECT 1
-      testWhileIdle: true
-      testOnBorrow: true
-      testOnReturn: false
+
