@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nettydome.nettydemo.Dao.DtuDao">
+    <select id="selectAll" resultType="Dtu">
+        select * from dtu
+    </select>
+
+    <select id="selectOneByIp" parameterType="String" resultType="dtu">
+        select * from dtu where ip=#{ip}
+    </select>
+
+    <insert id="insertIp" parameterType="dtu">
+        insert into dtu(id,mac) values (#{id},#{mac})
+    </insert>
+
+    <update id="undateIp" parameterType="dtu">
+        update dtu set ip=#{ip} where id=#{id}
+    </update>
+</mapper>
