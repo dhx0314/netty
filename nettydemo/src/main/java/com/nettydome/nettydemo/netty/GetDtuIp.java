@@ -30,12 +30,6 @@ public class GetDtuIp {
     private String DTU_DEVICE02MAC="00-1e-64-df-fc-9b";
 
 
-
-    public void fun1() {
-        System.out.println(DTU_DEVICE02MAC);
-        System.out.println(DTU_DEVICE01MAC);
-    }
-
     /**
      * @Author dhx
      * @Description //TODO
@@ -68,13 +62,9 @@ public class GetDtuIp {
             System.out.println("------------");
             for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
                 if (DTU_DEVICE01MAC.equals(stringStringEntry.getKey())) {
-                    System.out.println(stringStringEntry.getKey()+"  "+stringStringEntry
-                            .getValue());
                     ipMap.put(stringStringEntry.getValue(),"DTU设备1");
                 }
                 if (DTU_DEVICE02MAC.equals(stringStringEntry.getKey())) {
-                    System.out.println(stringStringEntry.getKey()+"  "+stringStringEntry
-                            .getValue());
                     ipMap.put(stringStringEntry.getValue(),"DTU设备2");
                 }
             }

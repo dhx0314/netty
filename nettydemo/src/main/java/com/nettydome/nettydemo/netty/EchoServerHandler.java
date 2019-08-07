@@ -35,39 +35,31 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private UserChannelRel userChannelRel;
 
-//    @Autowired
-//    private GetDtuIp getDtuIp;
-
+    @Autowired
+    private GetDtuIp getDtuIp2;
 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
 
-        ByteBuf byteBuf=(ByteBuf)msg;
+        ByteBuf byteBuf = (ByteBuf) msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
+//        GetDtuIp getDtuIp = new GetDtuIp();
+//        HashMap<String, String> map = getDtuIp.getDtuIpAddress();
 
-        GetDtuIp dtuIp = new GetDtuIp();
-
-
-        System.out.println("------------");
-        HashMap<String, String> map = dtuIp.getDtuIpAddress();
-        System.out.println(map);
-        System.out.println("userChannelRel   "+userChannelRel);
-        System.out.println("getDtuIp   "+ dtuIp);
-//        String message2 = new String(bytes, "UTF-8");
-//        System.out.println("from client : " + message2);
+        HashMap<String, String> map = getDtuIp2.getDtuIpAddress();
+        //  System.out.println(map);
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
-        userChannelRel.put(clientIP,ctx.channel());
+        userChannelRel.put(clientIP, ctx.channel());
         System.out.println(clientIP);
         for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
-            String ip=stringStringEntry.getKey();
-            if(clientIP.equals(ip)){
+            String ip = stringStringEntry.getKey();
+            if (clientIP.equals(ip)) {
                 System.out.println("------------------");
                 System.out.println(stringStringEntry.getValue());
-                System.out.println("------------------");
                 //调用netWeight方法，每次返回一个净重
                 double netWeight = netWeight(bytes);
                 //   调用tareWeigh方法，每次返回一个净重
@@ -76,13 +68,13 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
                 System.out.print("====");
                 System.out.print(netWeight);
                 System.out.print("****");
-            }else {
-                System.out.println("------------");
-                System.out.println("其他设备");
-                System.out.println("--------------");
-                String message = new String(bytes, "UTF-8");
-                System.out.println("from client : " + message);
             }
+//            } else {
+//                System.out.println("------------------");
+//                System.out.println("其他设备");
+//                String message = new String(bytes, "UTF-8");
+//                System.out.println("from client : " + message);
+//            }
         }
 
     }
@@ -107,26 +99,27 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("channel捕获到了异常: "+ cause.toString());
+        log.info("channel捕获到了异常: " + cause.toString());
         // 发生异常之后关闭连接（关闭channel），随后从ChannelGroup中移除
         ctx.channel().close();
         users.remove(ctx.channel());
     }
 
     //    净重
-    public static double netWeight(byte[] b){
+    public static double netWeight(byte[] b) {
         String sum = "";
-        for(int i = 4; i <=9 ; i++){
-            sum += (char)b[i];
+        for (int i = 4; i <= 9; i++) {
+            sum += (char) b[i];
         }
-        double abc =Double.valueOf(sum);
+        double abc = Double.valueOf(sum);
         return abc;
     }
+
     //    皮重
     public static String tareWeigh(byte[] b) {
         String sum = "";
-        for (int i = 12; i <=17 ; i++) {
-            sum += (char)b[i];
+        for (int i = 12; i <= 17; i++) {
+            sum += (char) b[i];
         }
         return sum;
 

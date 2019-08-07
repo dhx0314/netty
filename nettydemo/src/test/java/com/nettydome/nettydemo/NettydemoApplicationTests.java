@@ -23,7 +23,7 @@ public class NettydemoApplicationTests {
 
         System.out.println(dtuIp);
 
-        getDtuIp.fun1();
+
         System.out.println("aaaaa");
     }
 

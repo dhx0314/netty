@@ -16,6 +16,7 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,10 +37,13 @@ public class EchoServer {
     /**
      * NETT服务器配置类
      */
-//    @Resource
-//    private NettyConfig nettyConfig;
+
+
     @Value("${netty.port}")
     private Integer port;
+
+    @Autowired
+    private EchoServerChildHandler echoServerChildHandler;
 
     public Integer getPort() {
         return port;
@@ -63,7 +67,7 @@ public class EchoServer {
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG,1024)
             .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(new EchoServerChildHandler());
+            .childHandler(echoServerChildHandler);
 
             log.info("【服务器启动成功========端口："+port+"】");
 //            绑定端口，同步等待成功
