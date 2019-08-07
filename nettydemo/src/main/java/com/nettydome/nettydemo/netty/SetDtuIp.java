@@ -1,7 +1,10 @@
 package com.nettydome.nettydemo.netty;
 
+import com.nettydome.nettydemo.Dao.DtuDao;
+import com.nettydome.nettydemo.entity.Dtu;
 import io.netty.channel.ChannelHandler;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,12 +29,15 @@ import java.util.Map;
 
 
 @Component
-public class GetDtuIp {
+public class SetDtuIp {
 
 
-    private String DTU_DEVICE01MAC="98-d8-63-11-a1-3d";
-    private String DTU_DEVICE02MAC="00-1e-64-df-fc-9b";
-    private String DTU_DEVICE03MAC="ff-1e-64-df-fc-9b";
+//    private String DTU_DEVICE01MAC="98-d8-63-11-a1-3d";
+//    private String DTU_DEVICE02MAC="00-1e-64-df-fc-9b";
+//    private String DTU_DEVICE03MAC="ff-1e-64-df-fc-9b";
+
+    @Autowired
+    private DtuDao dtuDao;
 
 
     /**
@@ -39,19 +46,10 @@ public class GetDtuIp {
      * @Date 2019//7 10:2
      * @Return java.util.Map
      **/
-    public  HashMap<String, String> getDtuIpAddress() {
+    public  void setDtu() {
 
-        ArrayList<String> dtuMac = new ArrayList<>();
-        dtuMac.add(DTU_DEVICE01MAC);
-        dtuMac.add(DTU_DEVICE02MAC);
-        dtuMac.add(DTU_DEVICE03MAC);
-//        System.out.println(dtuMac.get(0));
-//        System.out.println(dtuMac.get(1));
-//        System.out.println(dtuMac.get(2));
-
-
+        List<Dtu> dtuList = dtuDao.selectAll();
         HashMap<String, String> map = new HashMap<>();
-        HashMap<String, String> ipMap = new HashMap<>();
         BufferedReader br = null;
         String command = "arp -a";//获得局域网IP跟MAC地址
         try {
@@ -68,20 +66,21 @@ public class GetDtuIp {
                   //  System.out.println(s);
                 }
             }
-            System.out.println("------------");
-            for (Map.Entry<String, String> stringStringEntry : ipMap.entrySet()) {
-                System.out.println(stringStringEntry.getKey()+"  "+stringStringEntry.getValue());
-            }
-
-            int t=1;
-            for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
-                for (int i = 0; i <dtuMac.size() ; i++) {
-                    if (dtuMac.get(i).equals(stringStringEntry.getKey())) {
-                        ipMap.put(stringStringEntry.getValue(),"DTU设备 "+ t++);
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                String mac=entry.getKey();
+                for (int i = 0; i <dtuList.size() ; i++) {
+                        Dtu dtu = dtuList.get(i);
+                    if(mac.equals(dtu.getMac())){
+                        Dtu dtunew = new Dtu();
+                        dtunew.setId(dtu.getId());
+                        dtunew.setMac(dtu.getMac());
+                        dtunew.setIp(entry.getValue());
+                        dtuDao.undateIp(dtunew);
                     }
                 }
             }
-            return ipMap;
+
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -94,7 +93,7 @@ public class GetDtuIp {
                 }
             }
         }
-        return ipMap;
+
     }
 
 }

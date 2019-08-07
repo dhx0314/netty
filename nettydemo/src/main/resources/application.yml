@@ -5,4 +5,26 @@ netty:
 
 
 
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=UTF-8&autoReconnectForPools=true&serverTimezone=Hongkong&useSSL=false
+    username: root
+    password: root
+
+
+server:
+  port: 8080
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  type-aliases-package: com.nettydome.nettydemo.entity
+
+#showSql
+logging:
+  level:
+    com:
+      example:
+        mapper : debug
 

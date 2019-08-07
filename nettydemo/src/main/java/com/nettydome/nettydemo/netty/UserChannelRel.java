@@ -21,7 +21,6 @@ public class UserChannelRel {
 	private static HashMap<String, Channel> manager = new HashMap<>();
 
 	public static void put(String senderId, Channel channel) {
-		System.out.println("put");
 		manager.put(senderId, channel);
 	}
 	

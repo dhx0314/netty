@@ -1,5 +1,7 @@
 package com.nettydome.nettydemo.netty;
 
+import com.nettydome.nettydemo.Dao.DtuDao;
+import com.nettydome.nettydemo.entity.Dtu;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,48 +38,41 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
     private UserChannelRel userChannelRel;
 
     @Autowired
-    private GetDtuIp getDtuIp2;
+    private SetDtuIp setDtuIp;
 
+    @Autowired
+    private DtuDao dtuDao;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-
+        setDtuIp.setDtu();//初始化DTU设备的IP
         ByteBuf byteBuf = (ByteBuf) msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
-//        GetDtuIp getDtuIp = new GetDtuIp();
-//        HashMap<String, String> map = getDtuIp.getDtuIpAddress();
-
-        HashMap<String, String> map = getDtuIp2.getDtuIpAddress();
-        //  System.out.println(map);
         InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIP = insocket.getAddress().getHostAddress();
         userChannelRel.put(clientIP, ctx.channel());
         System.out.println(clientIP);
-        for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
-            String ip = stringStringEntry.getKey();
-            if (clientIP.equals(ip)) {
-                System.out.println("------------------");
-                System.out.println(stringStringEntry.getValue());
-                //调用netWeight方法，每次返回一个净重
-                double netWeight = netWeight(bytes);
-                //   调用tareWeigh方法，每次返回一个净重
-                String tareWeigh = tareWeigh(bytes);
-                System.out.print(tareWeigh);
-                System.out.print("====");
-                System.out.print(netWeight);
-                System.out.print("****");
+        Dtu dtu = dtuDao.selectOneByIp(clientIP);
+        if (dtu!=null) {
+            System.out.println("来自设备 " + dtu.getId() + "发送的数据");
+            for (byte aByte : bytes) {
+                System.out.print(aByte + " ");
             }
-//            } else {
-//                System.out.println("------------------");
-//                System.out.println("其他设备");
-//                String message = new String(bytes, "UTF-8");
-//                System.out.println("from client : " + message);
-//            }
+            System.out.println();
+            //调用netWeight方法，每次返回一个净重
+//        double netWeight = netWeight(bytes);
+//        //   调用tareWeigh方法，每次返回一个净重
+//        String tareWeigh = tareWeigh(bytes);
+//        System.out.print(tareWeigh);
+//        System.out.print("====");
+//        System.out.print(netWeight);
+//        System.out.print("****");
+        }else {
+            System.out.println("未知设备");
         }
-
-    }
+}
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
