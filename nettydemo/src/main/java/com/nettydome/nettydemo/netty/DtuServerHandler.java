@@ -2,6 +2,8 @@ package com.nettydome.nettydemo.netty;
 
 import com.nettydome.nettydemo.Dao.DtuDao;
 import com.nettydome.nettydemo.entity.Dtu;
+import com.nettydome.nettydemo.util.DtuUtil;
+import com.nettydome.nettydemo.util.FlowUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,12 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 
 /**
- * @ClassName EchoServerHandler
+ * @ClassName DtuServerHandler
  * @Description TODO
  * @Author Lei
  * @Date 2019/8/2 11:01
@@ -29,42 +29,45 @@ import java.util.Map;
 @Component
 @ChannelHandler.Sharable
 @Slf4j
-public class EchoServerHandler extends ChannelInboundHandlerAdapter {
+public class DtuServerHandler extends ChannelInboundHandlerAdapter {
 
     //用于记录和管理所有客户端的channel
     public static ChannelGroup users = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     @Autowired
-    private UserChannelRel userChannelRel;
+    private DeviceConnectionManagement deviceConnectionManagement;
 
     @Autowired
-    private SetDtuIp setDtuIp;
+    private DtuUtil dtuUtil;
 
     @Autowired
-    private DtuDao dtuDao;
+    private DtuDao dtuDao; //File -- Settings -- Inspections 修改Autowired检测的级别
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        setDtuIp.setDtu();//初始化DTU设备的IP
+        dtuUtil.setDtu();//初始化DTU设备的IP
         ByteBuf byteBuf = (ByteBuf) msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
-        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
-        String clientIP = insocket.getAddress().getHostAddress();
-        userChannelRel.put(clientIP, ctx.channel());
-        System.out.println(clientIP);
-        Dtu dtu = dtuDao.selectOneByIp(clientIP);
+
+        String dtuIp = DtuUtil.getDtuIp(ctx);
+        Dtu dtu = dtuDao.selectOneByIp(dtuIp);
+
+        // System.out.println(clientIP);
         if (dtu!=null) {
-            System.out.println("来自设备 " + dtu.getId() + "发送的数据");
+            System.out.println("来自设备 " + dtu.getDtuId() + "发送的数据");
             for (byte aByte : bytes) {
                 System.out.print(aByte + " ");
             }
             System.out.println();
+
+            DeviceConnectionManagement.onlineCount();
+            DeviceConnectionManagement.output();
             //调用netWeight方法，每次返回一个净重
-//        double netWeight = netWeight(bytes);
-//        //   调用tareWeigh方法，每次返回一个净重
-//        String tareWeigh = tareWeigh(bytes);
+//        double netWeight = FlowUtil.netWeight(bytes);
+//        //   调用tareWeigh方法，每次返回一个皮重
+//        String tareWeigh = FlowUtil.tareWeigh(bytes);
 //        System.out.print(tareWeigh);
 //        System.out.print("====");
 //        System.out.print(netWeight);
@@ -76,8 +79,15 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        String dtuIp = DtuUtil.getDtuIp(ctx);
+        Dtu dtu = dtuDao.selectOneByIp(dtuIp);
+        String dtuId=Integer.toString(dtu.getDtuId());
+        deviceConnectionManagement.put(dtuId, ctx.channel());
+
+
         users.add(ctx.channel());
-        log.info("客户端连接，channel对应的长id为： " + ctx.channel().id().asLongText());
+        log.info("设备id: {},设备ip: {},设备mac: {}",dtu.getDtuId(),dtu.getDtuIp(),dtu.getDtuMac());
+        log.info("设备id: {} 连接上线, channel对应的长id为: {}" ,dtu.getDtuId(), ctx.channel().id().asLongText());
     }
 
     @Override
@@ -85,11 +95,15 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         //ChannelGroup是自动管理，当浏览器关闭或者刷新页面，channel会被自动移除
         //当触发handlerRemoved，ChannelGroup会自动移除对应客户端的channel
         //clients.remove(ctx.channel());
-        log.info("客户端断开，channel对应的长id为： " + ctx.channel().id().asLongText());
-        log.info("客户端断开，channel对应的短id为： " + ctx.channel().id().asShortText());
+
+        String dtuIp = DtuUtil.getDtuIp(ctx);
+        Dtu dtu = dtuDao.selectOneByIp(dtuIp);
+        log.info("设备id: {},设备ip: {},设备mac: {}",dtu.getDtuId(),dtu.getDtuIp(),dtu.getDtuMac());
+        log.info("设备id: {} 断开连接,channel对应的长id为： " ,dtu.getDtuId(),ctx.channel().id().asLongText());
+        log.info("设备id: {} 断开连接,channel对应的短id为： " ,dtu.getDtuId(), ctx.channel().id().asShortText());
         users.remove(ctx.channel());
-        UserChannelRel.deleteChanel(ctx.channel());
-        UserChannelRel.output();
+        DeviceConnectionManagement.deleteChanel(ctx.channel());
+        DeviceConnectionManagement.output();
     }
 
     @Override
@@ -100,25 +114,10 @@ public class EchoServerHandler extends ChannelInboundHandlerAdapter {
         users.remove(ctx.channel());
     }
 
-    //    净重
-    public static double netWeight(byte[] b) {
-        String sum = "";
-        for (int i = 4; i <= 9; i++) {
-            sum += (char) b[i];
-        }
-        double abc = Double.valueOf(sum);
-        return abc;
-    }
 
-    //    皮重
-    public static String tareWeigh(byte[] b) {
-        String sum = "";
-        for (int i = 12; i <= 17; i++) {
-            sum += (char) b[i];
-        }
-        return sum;
 
-    }
+
+
 
 
 }

@@ -13,9 +13,9 @@ import lombok.Data;
 @Data
 public class Dtu {
 
-    private int id;
-    private String mac;
-    private String ip;
+    private int dtuId;
+    private String dtuMac;
+    private String dtuIp;
 
 
 

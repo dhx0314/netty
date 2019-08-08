@@ -8,14 +8,14 @@
     </select>
 
     <select id="selectOneByIp" parameterType="String" resultType="dtu">
-        select * from dtu where ip=#{ip}
+        select * from dtu where dtuip=#{dtuIp}
     </select>
 
     <insert id="insertIp" parameterType="dtu">
-        insert into dtu(id,mac) values (#{id},#{mac})
+        insert into dtu(dtuid,dtumac) values (#{dtuId},#{dtuMac})
     </insert>
 
     <update id="undateIp" parameterType="dtu">
-        update dtu set ip=#{ip} where id=#{id}
+        update dtu set dtuip=#{dtuIp} where dtuid=#{dtuId}
     </update>
 </mapper>

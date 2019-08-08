@@ -35,18 +35,17 @@ public class DtuTest {
     @Test
     public void insertIp() {
         Dtu dtu = new Dtu();
-        dtu.setId(4);
-        dtu.setMac("aabb");
-        dtu.setIp("192.168.0.11");
+        dtu.setDtuId(7);
+        dtu.setDtuMac("aabb");
+        dtu.setDtuIp("192.168.01.11");
         dtuDao.insertIp(dtu);
     }
 
     @Test
     public void updateIp() {
         Dtu dtu = new Dtu();
-        dtu.setId(3);
-        dtu.setMac("aa");
-        dtu.setIp("192.168.0.1");
+        dtu.setDtuId(3);
+        dtu.setDtuIp("192.168.011.1");
         dtuDao.undateIp(dtu);
     }
 

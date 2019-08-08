@@ -6,7 +6,6 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @Description: 用于检测channel的心跳handler 
@@ -29,7 +28,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
 			} else if (event.state() == IdleState.ALL_IDLE) {
 
 				log.info("触发了读写空闲");
-				log.info("channel关闭前，users的数量为：" + EchoServerHandler.users.size());
+				log.info("channel关闭前，dtuDevice的数量为：" + DtuServerHandler.users.size());
 				
 				Channel channel = ctx.channel();
 				// 关闭无用的channel，以防资源浪费
@@ -37,7 +36,7 @@ public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
 
 
 
-				log.info("channel关闭后，users的数量为：" + EchoServerHandler.users.size());
+				log.info("channel关闭后，dtuDevice的数量为：" + DtuServerHandler.users.size());
 			}
 		}
 		

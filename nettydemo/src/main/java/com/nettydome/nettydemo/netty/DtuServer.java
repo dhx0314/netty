@@ -1,30 +1,22 @@
 package com.nettydome.nettydemo.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 /**
- * @ClassName EchoServer
+ * @ClassName DtuServer
  * @Description TODO
  * @Author Lei
  * @Date 2019/8/2 10:44
@@ -32,7 +24,7 @@ import javax.annotation.Resource;
  **/
 @Component
 @Slf4j
-public class EchoServer {
+public class DtuServer {
 
     /**
      * NETT服务器配置类
@@ -43,7 +35,7 @@ public class EchoServer {
     private Integer port;
 
     @Autowired
-    private EchoServerChildHandler echoServerChildHandler;
+    private DtuServerChildHandler dtuServerChildHandler;
 
     public Integer getPort() {
         return port;
@@ -60,6 +52,7 @@ public class EchoServer {
         EventLoopGroup workGroup=new NioEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
+            //接收缓冲区 ,发送缓冲区
 //            bootstrap.option(ChannelOption.SO_SNDBUF, 16*1024)
 //                    .option(ChannelOption.SO_RCVBUF, 16*1024)
 //                    .option(ChannelOption.SO_KEEPALIVE, true);
@@ -67,7 +60,7 @@ public class EchoServer {
             .channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG,1024)
             .handler(new LoggingHandler(LogLevel.INFO))
-            .childHandler(echoServerChildHandler);
+            .childHandler(dtuServerChildHandler);
 
             log.info("【服务器启动成功========端口："+port+"】");
 //            绑定端口，同步等待成功

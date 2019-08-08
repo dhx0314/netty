@@ -1,7 +1,7 @@
 package com.nettydome.nettydemo;
 
 
-import com.nettydome.nettydemo.netty.SetDtuIp;
+import com.nettydome.nettydemo.util.DtuUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ import java.util.ArrayList;
 public class NettydemoApplicationTests {
 
     @Autowired
-    private SetDtuIp setDtuIp;
+    private DtuUtil dtuUtil;
 
     @Test
     public void contextLoads() {
-        setDtuIp.setDtu();
+        dtuUtil.setDtu();
 
     }
 
@@ -34,5 +34,8 @@ public class NettydemoApplicationTests {
             System.out.println(string);
         }
     }
+
+
+
 
 }

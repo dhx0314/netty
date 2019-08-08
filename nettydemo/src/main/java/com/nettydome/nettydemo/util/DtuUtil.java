@@ -1,8 +1,9 @@
-package com.nettydome.nettydemo.netty;
+package com.nettydome.nettydemo.util;
 
 import com.nettydome.nettydemo.Dao.DtuDao;
 import com.nettydome.nettydemo.entity.Dtu;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ import java.util.Map;
 
 
 @Component
-public class SetDtuIp {
+public class DtuUtil {
 
 
 //    private String DTU_DEVICE01MAC="98-d8-63-11-a1-3d";
@@ -42,7 +44,7 @@ public class SetDtuIp {
 
     /**
      * @Author dhx
-     * @Description //TODO
+     * @Description //TODO 初始化DTU设备的IP
      * @Date 2019//7 10:2
      * @Return java.util.Map
      **/
@@ -70,12 +72,11 @@ public class SetDtuIp {
                 String mac=entry.getKey();
                 for (int i = 0; i <dtuList.size() ; i++) {
                         Dtu dtu = dtuList.get(i);
-                    if(mac.equals(dtu.getMac())){
-                        Dtu dtunew = new Dtu();
-                        dtunew.setId(dtu.getId());
-                        dtunew.setMac(dtu.getMac());
-                        dtunew.setIp(entry.getValue());
-                        dtuDao.undateIp(dtunew);
+                    if(mac.equals(dtu.getDtuMac())){
+                        Dtu newDtu = new Dtu();
+                        newDtu.setDtuId(dtu.getDtuId());
+                        newDtu.setDtuIp(entry.getValue());
+                        dtuDao.undateIp(newDtu);
                     }
                 }
             }
@@ -94,6 +95,13 @@ public class SetDtuIp {
             }
         }
 
+    }
+
+
+    public static String getDtuIp(ChannelHandlerContext ctx) {
+        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+        String clientIP = insocket.getAddress().getHostAddress();
+        return clientIP;
     }
 
 }
