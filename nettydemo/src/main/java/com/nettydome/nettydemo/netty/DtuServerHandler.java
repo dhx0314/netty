@@ -55,39 +55,41 @@ public class DtuServerHandler extends ChannelInboundHandlerAdapter {
         Dtu dtu = dtuDao.selectOneByIp(dtuIp);
 
         // System.out.println(clientIP);
-        if (dtu!=null) {
+        if (dtu != null) {
             System.out.println("来自设备 " + dtu.getDtuId() + "发送的数据");
-            for (byte aByte : bytes) {
-                System.out.print(aByte + " ");
+            if (dtu.getDtuId()==1) {
+                //调用netWeight方法，每次返回一个净重
+                double netWeight = FlowUtil.netWeight(bytes);
+                //   调用tareWeigh方法，每次返回一个皮重
+                String tareWeigh = FlowUtil.tareWeigh(bytes);
+                System.out.print(tareWeigh);
+                System.out.print("====");
+                System.out.print(netWeight);
+                System.out.print("****");
+                System.out.println();
+                DeviceConnectionManagement.onlineCount();
+                DeviceConnectionManagement.output();
             }
-            System.out.println();
-
-            DeviceConnectionManagement.onlineCount();
-            DeviceConnectionManagement.output();
-            //调用netWeight方法，每次返回一个净重
-//        double netWeight = FlowUtil.netWeight(bytes);
-//        //   调用tareWeigh方法，每次返回一个皮重
-//        String tareWeigh = FlowUtil.tareWeigh(bytes);
-//        System.out.print(tareWeigh);
-//        System.out.print("====");
-//        System.out.print(netWeight);
-//        System.out.print("****");
-        }else {
+            else {
+                String s=new String(bytes);
+                System.out.println(s);
+            }
+        } else {
             System.out.println("未知设备");
         }
-}
+    }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         String dtuIp = DtuUtil.getDtuIp(ctx);
         Dtu dtu = dtuDao.selectOneByIp(dtuIp);
-        String dtuId=Integer.toString(dtu.getDtuId());
+        String dtuId = Integer.toString(dtu.getDtuId());
         deviceConnectionManagement.put(dtuId, ctx.channel());
 
 
         users.add(ctx.channel());
-        log.info("设备id: {},设备ip: {},设备mac: {}",dtu.getDtuId(),dtu.getDtuIp(),dtu.getDtuMac());
-        log.info("设备id: {} 连接上线, channel对应的长id为: {}" ,dtu.getDtuId(), ctx.channel().id().asLongText());
+        log.info("设备id: {},设备ip: {},设备mac: {}", dtu.getDtuId(), dtu.getDtuIp(), dtu.getDtuMac());
+        log.info("设备id: {} 连接上线, channel对应的长id为: {}", dtu.getDtuId(), ctx.channel().id().asLongText());
     }
 
     @Override
@@ -98,9 +100,9 @@ public class DtuServerHandler extends ChannelInboundHandlerAdapter {
 
         String dtuIp = DtuUtil.getDtuIp(ctx);
         Dtu dtu = dtuDao.selectOneByIp(dtuIp);
-        log.info("设备id: {},设备ip: {},设备mac: {}",dtu.getDtuId(),dtu.getDtuIp(),dtu.getDtuMac());
-        log.info("设备id: {} 断开连接,channel对应的长id为： " ,dtu.getDtuId(),ctx.channel().id().asLongText());
-        log.info("设备id: {} 断开连接,channel对应的短id为： " ,dtu.getDtuId(), ctx.channel().id().asShortText());
+        log.info("设备id: {},设备ip: {},设备mac: {}", dtu.getDtuId(), dtu.getDtuIp(), dtu.getDtuMac());
+        log.info("设备id: {} 断开连接,channel对应的长id为：{} ", dtu.getDtuId(), ctx.channel().id().asLongText());
+        log.info("设备id: {} 断开连接,channel对应的短id为：{}", dtu.getDtuId(), ctx.channel().id().asShortText());
         users.remove(ctx.channel());
         DeviceConnectionManagement.deleteChanel(ctx.channel());
         DeviceConnectionManagement.output();
@@ -113,11 +115,6 @@ public class DtuServerHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().close();
         users.remove(ctx.channel());
     }
-
-
-
-
-
 
 
 }

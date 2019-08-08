@@ -1,8 +1,11 @@
 package com.nettydome.nettydemo.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,8 +29,8 @@ public class DtuServerChildHandler extends ChannelInitializer<SocketChannel> {
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline pipeline = socketChannel.pipeline();
         //分隔符解码器
-//        ByteBuf byteBuf = Unpooled.copiedBuffer("\r\n".getBytes());
-//        pipeline.addLast(new DelimiterBasedFrameDecoder(1024,byteBuf));
+        ByteBuf byteBuf = Unpooled.copiedBuffer("\r\n".getBytes());
+        pipeline.addLast(new DelimiterBasedFrameDecoder(1024,byteBuf));
         pipeline.addLast(dtuServerHandler);
         pipeline.addLast(new IdleStateHandler(8, 14, 18));
         pipeline.addLast(new HeartBeatHandler());
