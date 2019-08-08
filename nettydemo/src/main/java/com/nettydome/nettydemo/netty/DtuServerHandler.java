@@ -46,7 +46,6 @@ public class DtuServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        dtuUtil.setDtu();//初始化DTU设备的IP
         ByteBuf byteBuf = (ByteBuf) msg;
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
@@ -81,6 +80,7 @@ public class DtuServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        dtuUtil.setDtu();//初始化DTU设备的IP
         String dtuIp = DtuUtil.getDtuIp(ctx);
         Dtu dtu = dtuDao.selectOneByIp(dtuIp);
         String dtuId = Integer.toString(dtu.getDtuId());
