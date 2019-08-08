@@ -55,4 +55,12 @@ public class DtuTest {
         Dtu dtu = dtuDao.selectOneByIp(ip);
         System.out.println(dtu);
     }
+
+    @Test
+    public void selectOneBymac() {
+        String mac="98-d8-63-11-a1-3d";
+        Dtu dtu = dtuDao.selectOneByMac(mac);
+        System.out.println(dtu);
+
+    }
 }

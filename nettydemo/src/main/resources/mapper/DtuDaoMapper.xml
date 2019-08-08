@@ -11,6 +11,10 @@
         select * from dtu where dtuip=#{dtuIp}
     </select>
 
+    <select id="selectOneByMac" parameterType="String" resultType="dtu">
+        select * from dtu where dtumac=#{dtuMac}
+    </select>
+
     <insert id="insertIp" parameterType="dtu">
         insert into dtu(dtuid,dtumac) values (#{dtuId},#{dtuMac})
     </insert>

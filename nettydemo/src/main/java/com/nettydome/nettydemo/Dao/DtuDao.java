@@ -17,5 +17,6 @@ public interface DtuDao {
     void undateIp(Dtu dtu);
 
 
-    Dtu selectOneByIp(String ip);
+    Dtu selectOneByIp(String dtuIp);
+    Dtu selectOneByMac(String dtuMac);
 }

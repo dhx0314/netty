@@ -50,7 +50,7 @@ public class DtuUtil {
      **/
     public  void setDtu() {
 
-        List<Dtu> dtuList = dtuDao.selectAll();
+
         HashMap<String, String> map = new HashMap<>();
         BufferedReader br = null;
         String command = "arp -a";//获得局域网IP跟MAC地址
@@ -68,11 +68,12 @@ public class DtuUtil {
                   //  System.out.println(s);
                 }
             }
+
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String mac=entry.getKey();
-                for (int i = 0; i <dtuList.size() ; i++) {
-                        Dtu dtu = dtuList.get(i);
-                    if(mac.equals(dtu.getDtuMac())){
+                Dtu dtu = dtuDao.selectOneByMac(mac);
+                if (dtu != null) {
+                    if (mac.equals(dtu.getDtuMac())) {
                         Dtu newDtu = new Dtu();
                         newDtu.setDtuId(dtu.getDtuId());
                         newDtu.setDtuIp(entry.getValue());
