@@ -1,17 +1,21 @@
 package com.nettydome.nettydemo.netty;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
  * @Description: 用于检测channel的心跳handler 
  * 				 继承ChannelInboundHandlerAdapter，从而不需要实现channelRead0方法
  */
 @Slf4j
+@Component
+@ChannelHandler.Sharable
 public class HeartBeatHandler extends ChannelInboundHandlerAdapter {
 
 	@Override

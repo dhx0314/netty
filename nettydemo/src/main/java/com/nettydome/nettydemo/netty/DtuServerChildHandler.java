@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DtuServerChildHandler extends ChannelInitializer<SocketChannel> {
 
-
+    @Autowired
     private HeartBeatHandler heartBeatHandler;
     @Autowired
     private DtuServerHandler dtuServerHandler;
@@ -33,7 +33,7 @@ public class DtuServerChildHandler extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(1024,byteBuf));
         pipeline.addLast(dtuServerHandler);
         pipeline.addLast(new IdleStateHandler(8, 14, 18));
-        pipeline.addLast(new HeartBeatHandler());
+        pipeline.addLast(heartBeatHandler);
 
     }
 }
